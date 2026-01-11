@@ -44,6 +44,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 }).AddEntityFrameworkStores<AppDbContext>()
   .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<IImageService, ImageService>();
+
 // configure JWT authentication
 builder.Services.AddAuthentication(options =>
 {
