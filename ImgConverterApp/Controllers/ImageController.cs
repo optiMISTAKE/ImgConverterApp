@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using ImgConverterApp.Application.Commands;
 using Microsoft.AspNetCore.Authorization;
+using ImgConverterApp.Application.Queries;
 
 namespace ImgConverterApp.Controllers
 {
@@ -47,6 +48,41 @@ namespace ImgConverterApp.Controllers
             {
                 // log exception (not implemented here) [TO-DO] 
                 return StatusCode(500, "An error occurred while processing the image.");
+            }
+        }
+
+        [HttpGet("download/{imageId}")]
+        public async Task<IActionResult> DownloadImage(Guid imageId)
+        {
+            try
+            {
+                // extract user ID from token claims
+                string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+
+                // send query to get the image
+                var query = new GetImageQuery(imageId, userId);
+                var fileResponse = await _mediator.Send(query);
+
+                // return the file
+                return File(fileResponse.Stream, fileResponse.ContentType, fileResponse.FileName);
+            }
+            catch (FileNotFoundException)
+            {
+                return NotFound("Image not found.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid("You do not have access to this image."); // 403 Forbidden
+            }
+            catch (Exception)
+            {
+                // log exception (not implemented here) [TO-DO] 
+                return StatusCode(500, "An error occurred while retrieving the image.");
             }
         }
     }

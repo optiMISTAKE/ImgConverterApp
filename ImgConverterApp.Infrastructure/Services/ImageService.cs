@@ -8,6 +8,8 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using ImgConverterApp.Domain.Entities;
 using ImgConverterApp.Domain.Enums;
+using ImgConverterApp.Application.Images;
+using Microsoft.EntityFrameworkCore;
 
 namespace ImgConverterApp.Infrastructure.Services
 {
@@ -59,6 +61,40 @@ namespace ImgConverterApp.Infrastructure.Services
             await _context.SaveChangesAsync();
 
             return userImage;
+        }
+
+        public async Task<FileResponseDto> GetImageAsync(Guid imageId, string userId)
+        {
+            // find the image in the DB
+            var userImage = await _context.UserImages.FirstOrDefaultAsync(x => x.Id == imageId);
+
+            if (userImage == null)
+            {
+                throw new FileNotFoundException("Image not found in databse.")
+            }
+
+            // security check - does the image belong to the user?
+            if (userImage.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("You do not have permission to access this file.");
+            }
+
+            // verifying the physical file exists
+            if (!File.Exists(userImage.StoredPath))
+            {
+                throw new FileNotFoundException("Physical file is missing.");
+            }
+
+            // open the file stream
+            // FileShare.Read is used to allow multiple people to download at once if needed
+            var fileStream = new FileStream(userImage.StoredPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            return new FileResponseDto
+            {
+                Stream = fileStream,
+                ContentType = "image/png", // at least for now we only convert to PNG
+                FileName = userImage.OriginalFileName
+            };
         }
     }
 }
