@@ -11,7 +11,14 @@ namespace ImgConverterApp.Application.Interfaces
     public interface IImageService
     {
         Task<UserImage> ProcessImageAsync (Stream fileStream, string originalFileName, string userId, long fileSize);
+
         // method that retrieves an image
-        Task<FileResponseDto> GetImageAsync(Guid imageId, string userId); // userId to 
+        Task<FileResponseDto> GetImageAsync(Guid imageId, string userId); // userId to ensure access control
+
+        Task<List<UserImageDto>> GetHistoryAsync(string userId);
+
+        Task DeleteImagesAsync(List<Guid> imageIds, string userId);
+
+        Task DeleteAllImagesAsync(string userId);
     }
 }

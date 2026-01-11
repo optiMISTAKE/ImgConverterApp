@@ -85,5 +85,75 @@ namespace ImgConverterApp.Controllers
                 return StatusCode(500, "An error occurred while retrieving the image.");
             }
         }
+
+        [HttpGet("history")]
+        public async Task<IActionResult> GetConversionHistory()
+        {
+            try
+            {
+                // extract user ID from token claims
+                string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+                var query = new GetHistoryQuery(userId);
+                var history = await _mediator.Send(query);
+                return Ok(history);
+            }
+            catch (Exception)
+            {
+                // log exception (not implemented here) [TO-DO] 
+                return StatusCode(500, "An error occurred while retrieving conversion history.");
+            }
+        }
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteImages([FromBody] List<Guid> imageIds)
+        {
+            try
+            {
+                // extract user ID from token claims
+                string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+                var command = new DeleteImagesCommand(imageIds, userId);
+                await _mediator.Send(command);
+                return NoContent(); // 204 No Content
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid("You do not have permission to delete one or more of the specified images.");
+            }
+            catch (Exception)
+            {
+                // log exception (not implemented here) [TO-DO] 
+                return StatusCode(500, "An error occurred while deleting images.");
+            }
+        }
+
+        [HttpDelete("deleteAll")]
+        public async Task<IActionResult> DeleteAllImages()
+        {
+            try
+            {
+                // extract user ID from token claims
+                string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+                var command = new DeleteImagesCommand(null, userId); // TO-DO: interpret null as delete all in handler
+                await _mediator.Send(command);
+                return NoContent(); // 204 No Content
+            }
+            catch (Exception)
+            {
+                // log exception (not implemented here) [TO-DO] 
+                return StatusCode(500, "An error occurred while deleting all images.");
+            }
+        }
     }
 }
