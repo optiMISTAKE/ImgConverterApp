@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36811.4 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgConverterApp", "ImgConverterApp\ImgConverterApp.csproj", "{291FD260-A726-4ADE-88C5-CD22DE789829}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2E9B7F55-F075-41C8-A4E0-FDAEB33C7BB3} = {2E9B7F55-F075-41C8-A4E0-FDAEB33C7BB3}
+		{A229EB0A-C41E-403B-85F5-A89549E5D1F6} = {A229EB0A-C41E-403B-85F5-A89549E5D1F6}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgConverterApp.Domain", "ImgConverterApp.Domain\ImgConverterApp.Domain.csproj", "{BDEC7E7C-5B4F-4044-88DA-7D7681248BBA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgConverterApp.Infrastructure", "ImgConverterApp.Infrastructure\ImgConverterApp.Infrastructure.csproj", "{2E9B7F55-F075-41C8-A4E0-FDAEB33C7BB3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A229EB0A-C41E-403B-85F5-A89549E5D1F6} = {A229EB0A-C41E-403B-85F5-A89549E5D1F6}
+		{BDEC7E7C-5B4F-4044-88DA-7D7681248BBA} = {BDEC7E7C-5B4F-4044-88DA-7D7681248BBA}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgConverterApp.Application", "ImgConverterApp.Application\ImgConverterApp.Application.csproj", "{A229EB0A-C41E-403B-85F5-A89549E5D1F6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BDEC7E7C-5B4F-4044-88DA-7D7681248BBA} = {BDEC7E7C-5B4F-4044-88DA-7D7681248BBA}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{291FD260-A726-4ADE-88C5-CD22DE789829}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{291FD260-A726-4ADE-88C5-CD22DE789829}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{291FD260-A726-4ADE-88C5-CD22DE789829}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{291FD260-A726-4ADE-88C5-CD22DE789829}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDEC7E7C-5B4F-4044-88DA-7D7681248BBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDEC7E7C-5B4F-4044-88DA-7D7681248BBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDEC7E7C-5B4F-4044-88DA-7D7681248BBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDEC7E7C-5B4F-4044-88DA-7D7681248BBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E9B7F55-F075-41C8-A4E0-FDAEB33C7BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E9B7F55-F075-41C8-A4E0-FDAEB33C7BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E9B7F55-F075-41C8-A4E0-FDAEB33C7BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E9B7F55-F075-41C8-A4E0-FDAEB33C7BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A229EB0A-C41E-403B-85F5-A89549E5D1F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A229EB0A-C41E-403B-85F5-A89549E5D1F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A229EB0A-C41E-403B-85F5-A89549E5D1F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A229EB0A-C41E-403B-85F5-A89549E5D1F6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A84B8602-851C-4D05-9C39-BDCE031600FF}
+	EndGlobalSection
+EndGlobal
