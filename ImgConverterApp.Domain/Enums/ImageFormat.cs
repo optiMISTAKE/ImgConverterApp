@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImgConverterApp.Domain
+namespace ImgConverterApp.Domain.Enums
 {
     public enum ImageFormat
     {

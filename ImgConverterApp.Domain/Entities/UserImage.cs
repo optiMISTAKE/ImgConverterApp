@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ImgConverterApp.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImgConverterApp.Domain
+namespace ImgConverterApp.Domain.Entities
 {
     public class UserImage
     {
@@ -22,7 +23,7 @@ namespace ImgConverterApp.Domain
         public DateTime ExpiresAt => CreatedAt.AddDays(30);
 
         // constructor
-        public UserImage(string userId, string originalFileName, string storedFileName, string filePath, long sizeInBytes, ImageFormat format, DateTime createdAt)
+        public UserImage(string userId, string originalFileName, string storedFileName, string storedPath, long sizeInBytes, ImageFormat format, DateTime createdAt)
         {
             // Optional: Add simple validation (Domain Guardrails)
             if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User is required");
@@ -31,7 +32,7 @@ namespace ImgConverterApp.Domain
             UserId = userId;
             OriginalFileName = originalFileName;
             StoredFileName = storedFileName;
-            StoredPath = filePath;
+            StoredPath = storedPath;
             SizeInBytes = sizeInBytes;
             Format = format;
             CreatedAt = createdAt;
