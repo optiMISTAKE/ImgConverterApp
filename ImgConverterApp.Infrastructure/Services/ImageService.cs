@@ -10,18 +10,21 @@ using ImgConverterApp.Domain.Entities;
 using ImgConverterApp.Domain.Enums;
 using ImgConverterApp.Application.Images;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ImgConverterApp.Infrastructure.Services
 {
     public class ImageService: IImageService
     {
         private readonly AppDbContext _context;
+        private readonly IServiceScopeFactory _scopeFactory;
         // folder where images will be stored
         private readonly string _storagePath = Path.Combine(Directory.GetCurrentDirectory(), "ImageStorage");
 
-        public ImageService(AppDbContext context)
+        public ImageService(AppDbContext context, IServiceScopeFactory scopeFactory)
         {
             _context = context;
+            _scopeFactory = scopeFactory;
             // ensure storage directory exists
             if (!Directory.Exists(_storagePath))
             {
@@ -64,31 +67,38 @@ namespace ImgConverterApp.Infrastructure.Services
             // check and cleanup old images (async, don't await if you want it even faster)
             _ = Task.Run(async () =>
             {
-                try
+                // Create a NEW scope for the background thread
+                using (var scope = _scopeFactory.CreateScope())
                 {
-                    var userImageCount = await _context.UserImages.CountAsync(x => x.UserId == userId);
+                    // Resolve a NEW instance of the DbContext
+                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                    if (userImageCount > 10)
+                    try
                     {
-                        var oldestImages = await _context.UserImages
-                            .Where(x => x.UserId == userId)
-                            .OrderBy(x => x.CreatedAt)
-                            .Take(userImageCount - 10)
-                            .ToListAsync();
+                        var userImageCount = await db.UserImages.CountAsync(x => x.UserId == userId);
 
-                        foreach (var oldImg in oldestImages)
+                        if (userImageCount >= 10)
                         {
-                            if (File.Exists(oldImg.StoredPath)) File.Delete(oldImg.StoredPath);
-                            _context.UserImages.Remove(oldImg);
-                        }
+                            var oldestImages = await db.UserImages
+                                .Where(x => x.UserId == userId)
+                                .OrderBy(x => x.CreatedAt)
+                                .Take(userImageCount - 10)
+                                .ToListAsync();
 
-                        await _context.SaveChangesAsync();
+                            foreach (var oldImg in oldestImages)
+                            {
+                                if (File.Exists(oldImg.StoredPath))
+                                    File.Delete(oldImg.StoredPath);
+                            }
+
+                            db.UserImages.RemoveRange(oldestImages); // Use RemoveRange for efficiency
+                            await db.SaveChangesAsync();
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    // Log error but don't fail the conversion
-                    Console.WriteLine($"Background cleanup failed: {ex.Message}");
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Background cleanup failed: {ex.Message}");
+                    }
                 }
             });
 
@@ -102,7 +112,7 @@ namespace ImgConverterApp.Infrastructure.Services
 
             if (userImage == null)
             {
-                throw new FileNotFoundException("Image not found in databse.")
+                throw new FileNotFoundException("Image not found in databse.");
             }
 
             // security check - does the image belong to the user?
@@ -129,6 +139,7 @@ namespace ImgConverterApp.Infrastructure.Services
             };
         }
 
+        // we'll always return 10 images
         public async Task<List<UserImageDto>> GetHistoryAsync(string userId)
         {
             return await _context.UserImages
@@ -142,7 +153,6 @@ namespace ImgConverterApp.Infrastructure.Services
                     SizeInBytes = x.SizeInBytes,
                     CreatedAt = x.CreatedAt
                 })
-                .Take(10) // Only return 10
                 .ToListAsync();
         }
 
