@@ -47,7 +47,7 @@ namespace ImgConverterApp.Application.Commands
                 OriginalFileName = resultImage.OriginalFileName,
                 StoredName = resultImage.StoredFileName,
                 // TO-DO: construct actual download URL based on routing, for now we construct a path
-                DownloadUrl = $"/images/download/{resultImage.Id}" // example URL
+                DownloadUrl = $"/api/Image/download/{resultImage.Id}"
             };
         }
     }

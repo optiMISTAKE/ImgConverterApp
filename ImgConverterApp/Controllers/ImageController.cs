@@ -85,5 +85,78 @@ namespace ImgConverterApp.Controllers
                 return StatusCode(500, "An error occurred while retrieving the image.");
             }
         }
+
+        [HttpGet("history")]
+        public async Task<IActionResult> GetHistory()
+        {
+            try
+            {
+                // extract user ID from token claims
+                string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+
+                var query = new GetHistoryQuery(userId);
+                var result = await _mediator.Send(query);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // log exception (not implemented here) [TO-DO]
+                return StatusCode(500, "An error occurred while retrieving image history.");
+            }
+        }
+
+        [HttpDelete("delete-multiple")]
+        public async Task<IActionResult> DeleteImages([FromBody] List<Guid> ids)
+        {
+            try
+            {
+                // extract user ID from token claims
+                string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+
+                await _mediator.Send(new DeleteImagesCommand(ids, userId));
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // log exception (not implemented here) [TO-DO]
+                return StatusCode(500, "An error occurred while retrieving image history.");
+            }
+        }
+
+        [HttpDelete("delete-all")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            try
+            {
+                // extract user ID from token claims
+                string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+
+                await _mediator.Send(new DeleteImagesCommand(null, userId));
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // log exception (not implemented here) [TO-DO]
+                return StatusCode(500, "An error occurred while retrieving image history.");
+            }
+        }
     }
 }

@@ -34,6 +34,7 @@ namespace ImgConverterApp.Infrastructure.Services
             // generate unique file names
             var fileId = Guid.NewGuid();
             var storedFileName = $"{fileId}.png";
+            var newName = originalFileName.Replace(".webp", "");
             var fullPath = Path.Combine(_storagePath, storedFileName);
 
             // load and convert using ImageSharp
@@ -48,7 +49,7 @@ namespace ImgConverterApp.Infrastructure.Services
             // create UserImage entity
             var userImage = new UserImage(
                 userId: userId,
-                originalFileName: originalFileName,
+                originalFileName: newName,
                 storedFileName: storedFileName,
                 storedPath: fullPath,
                 sizeInBytes: fileSize, // input size, TO-DO: consider actual saved size
@@ -60,6 +61,37 @@ namespace ImgConverterApp.Infrastructure.Services
             _context.UserImages.Add(userImage);
             await _context.SaveChangesAsync();
 
+            // check and cleanup old images (async, don't await if you want it even faster)
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var userImageCount = await _context.UserImages.CountAsync(x => x.UserId == userId);
+
+                    if (userImageCount > 10)
+                    {
+                        var oldestImages = await _context.UserImages
+                            .Where(x => x.UserId == userId)
+                            .OrderBy(x => x.CreatedAt)
+                            .Take(userImageCount - 10)
+                            .ToListAsync();
+
+                        foreach (var oldImg in oldestImages)
+                        {
+                            if (File.Exists(oldImg.StoredPath)) File.Delete(oldImg.StoredPath);
+                            _context.UserImages.Remove(oldImg);
+                        }
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error but don't fail the conversion
+                    Console.WriteLine($"Background cleanup failed: {ex.Message}");
+                }
+            });
+
             return userImage;
         }
 
@@ -70,7 +102,7 @@ namespace ImgConverterApp.Infrastructure.Services
 
             if (userImage == null)
             {
-                throw new FileNotFoundException("Image not found in databse.")
+                throw new FileNotFoundException("Image not found in databse.");
             }
 
             // security check - does the image belong to the user?
@@ -95,6 +127,53 @@ namespace ImgConverterApp.Infrastructure.Services
                 ContentType = "image/png", // at least for now we only convert to PNG
                 FileName = userImage.OriginalFileName
             };
+        }
+
+        public async Task<List<UserImageDto>> GetHistoryAsync(string userId)
+        {
+            return await _context.UserImages
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.CreatedAt)
+                .Select(x => new UserImageDto
+                {
+                    Id = x.Id,
+                    OriginalFileName = x.OriginalFileName,
+                    Format = x.Format.ToString(),
+                    SizeInBytes = x.SizeInBytes,
+                    CreatedAt = x.CreatedAt
+                })
+                .Take(10) // Only return 10
+                .ToListAsync();
+        }
+
+        public async Task DeleteImagesAsync(List<Guid> imageIds, string userId)
+        {
+            var images = await _context.UserImages
+                .Where(x => imageIds.Contains(x.Id) && x.UserId == userId)
+                .ToListAsync();
+
+            foreach (var img in images)
+            {
+                if (File.Exists(img.StoredPath)) File.Delete(img.StoredPath);
+            }
+
+            _context.UserImages.RemoveRange(images);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAllImagesAsync(string userId)
+        {
+            var images = await _context.UserImages
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+            foreach (var img in images)
+            {
+                if (File.Exists(img.StoredPath)) File.Delete(img.StoredPath);
+            }
+
+            _context.UserImages.RemoveRange(images);
+            await _context.SaveChangesAsync();
         }
     }
 }
