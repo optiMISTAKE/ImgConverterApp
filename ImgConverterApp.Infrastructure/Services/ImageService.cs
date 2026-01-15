@@ -102,7 +102,7 @@ namespace ImgConverterApp.Infrastructure.Services
 
             if (userImage == null)
             {
-                throw new FileNotFoundException("Image not found in databse.");
+                throw new FileNotFoundException("Image not found in databse.")
             }
 
             // security check - does the image belong to the user?
