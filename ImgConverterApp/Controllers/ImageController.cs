@@ -16,6 +16,8 @@ namespace ImgConverterApp.Controllers
             _mediator = mediator;
         }
 
+        // ENDPOINT - for converting an image from ".webp" to ".png"
+        // for a user with a given userId (the img will be tied to that user)
         [HttpPost("convert")]
         public async Task<IActionResult> ConvertImage(IFormFile file)
         {
@@ -51,12 +53,15 @@ namespace ImgConverterApp.Controllers
             }
         }
 
+        // ENDPOINT - for downloading a converted image from the database
+        // with the provided imageId of the png image
         [HttpGet("download/{imageId}")]
         public async Task<IActionResult> DownloadImage(Guid imageId)
         {
             try
             {
                 // extract user ID from token claims
+                // (the image must be tied to the user)
                 string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (string.IsNullOrEmpty(userId))
@@ -86,6 +91,7 @@ namespace ImgConverterApp.Controllers
             }
         }
 
+        // ENDPOINT - for getting the 10 last converted images of the user
         [HttpGet("history")]
         public async Task<IActionResult> GetHistory()
         {
@@ -111,6 +117,8 @@ namespace ImgConverterApp.Controllers
             }
         }
 
+        // ENDPOINT - for deleting singular or multiple images from their account
+        // and the database
         [HttpDelete("delete-multiple")]
         public async Task<IActionResult> DeleteImages([FromBody] List<Guid> ids)
         {
@@ -135,6 +143,7 @@ namespace ImgConverterApp.Controllers
             }
         }
 
+        // ENDPOINT - for deleting all of the images tied to the specific user in the database
         [HttpDelete("delete-all")]
         public async Task<IActionResult> DeleteAll()
         {

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace ImgConverterApp.Application.Images
 {
+    // data transfer model for storing the data regarding the image
+    // user has uploaded
     public class UserImageDto
     {
         public Guid Id { get; set; }

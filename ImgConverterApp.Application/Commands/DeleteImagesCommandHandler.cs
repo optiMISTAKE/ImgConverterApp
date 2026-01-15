@@ -15,10 +15,13 @@ namespace ImgConverterApp.Application.Commands
 
         public async Task Handle(DeleteImagesCommand request, CancellationToken ct)
         {
+            // if the method gets "null" for imageIds - we read it as a request
+            // for deleting all images from that user
             if (request.ImageIds == null)
             {
                 await _imageService.DeleteAllImagesAsync(request.UserId);
             }
+            // otherwise delete the image with the given imageId
             else
             {
                 await _imageService.DeleteImagesAsync(request.ImageIds, request.UserId);

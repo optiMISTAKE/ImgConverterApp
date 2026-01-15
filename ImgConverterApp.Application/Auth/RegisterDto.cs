@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ImgConverterApp.Application.Auth
 {
+    // model for the data transfer during registration
     public class RegisterDto
     {
         public string Email { get; set; } = string.Empty;

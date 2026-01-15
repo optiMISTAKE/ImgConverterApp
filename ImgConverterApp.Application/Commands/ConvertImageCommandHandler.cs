@@ -25,6 +25,7 @@ namespace ImgConverterApp.Application.Commands
                 throw new ArgumentException("File is null or empty");
             }
 
+            // check if the given file is ".webp"
             var ext = Path.GetExtension(request.File.FileName).ToLower();
             if (ext != ".webp")
             {
@@ -46,7 +47,6 @@ namespace ImgConverterApp.Application.Commands
                 Id = resultImage.Id,
                 OriginalFileName = resultImage.OriginalFileName,
                 StoredName = resultImage.StoredFileName,
-                // TO-DO: construct actual download URL based on routing, for now we construct a path
                 DownloadUrl = $"/api/Image/download/{resultImage.Id}"
             };
         }

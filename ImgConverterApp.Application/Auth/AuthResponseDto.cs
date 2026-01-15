@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ImgConverterApp.Application.Auth
 {
+    // model for authentication response during login/registration process
     public class AuthResponseDto
     {
         public string Token { get; set; } = string.Empty;

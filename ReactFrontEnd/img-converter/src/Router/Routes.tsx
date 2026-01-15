@@ -12,7 +12,7 @@ export const routes: RouteObject[] = [
         element: <App />,
         children: [
             // Public Landing or Redirect to Login? 
-            // For now, let's protect the main home page
+            // For now, just protect the main home page
             { 
                 path: "", 
                 element: <ProtectedRoute><MainPage /></ProtectedRoute> 

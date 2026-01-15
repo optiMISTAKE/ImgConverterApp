@@ -23,7 +23,7 @@ const MainPage: React.FC = () => {
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
-  // NEW: State for multi-select deletion
+  // State for multi-select deletion
   const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
   
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -133,14 +133,14 @@ const MainPage: React.FC = () => {
     }
   };
 
-  // NEW: Toggle selection of a single image
+  // Toggle selection of a single image
   const toggleImageSelection = (id: string) => {
     setSelectedImageIds((prev) =>
       prev.includes(id) ? prev.filter((imgId) => imgId !== id) : [...prev, id]
     );
   };
 
-  // NEW: Toggle select all
+  // Toggle select all
   const toggleSelectAll = () => {
     if (selectedImageIds.length === history.length) {
       setSelectedImageIds([]);
@@ -149,7 +149,7 @@ const MainPage: React.FC = () => {
     }
   };
 
-  // NEW: Delete selected images
+  // Delete selected images
   const handleDeleteSelected = async () => {
     if (selectedImageIds.length === 0) return;
 
@@ -172,7 +172,7 @@ const MainPage: React.FC = () => {
     }
   };
 
-  // NEW: Delete all images
+  // Delete all images
   const handleDeleteAll = async () => {
     try {
       await ImageService.deleteAll();

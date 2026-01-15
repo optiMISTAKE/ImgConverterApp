@@ -15,6 +15,7 @@ namespace ImgConverterApp.Controllers
             _mediator = mediator;
         }
 
+        // ENDPOINT - for registering new user in the system
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponseDto>> Register(RegisterDto registerDto)
         {
@@ -35,6 +36,7 @@ namespace ImgConverterApp.Controllers
             }
         }
 
+        // ENDPOINT - for logging in
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponseDto>> Login(LoginDto loginDto)
         {

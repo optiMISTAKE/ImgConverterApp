@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ImgConverterApp.Application.Images
 {
+    // data transfer model used during image conversion
     public class ImageResponseDto
     {
         public Guid Id { get; set; }
