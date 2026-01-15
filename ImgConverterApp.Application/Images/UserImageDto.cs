@@ -12,6 +12,7 @@ namespace ImgConverterApp.Application.Images
         public string OriginalFileName { get; set; }
         public string Format { get; set; }
         public long SizeInBytes { get; set; }
+        public long ConvertedSizeInBytes { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

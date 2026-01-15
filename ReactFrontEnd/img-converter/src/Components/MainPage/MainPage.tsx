@@ -201,6 +201,25 @@ const MainPage: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  // Calculate size difference percentage
+const calculateSizeDifference = (originalSize: number, convertedSize: number) => {
+  const difference = ((convertedSize - originalSize) / originalSize) * 100;
+  return difference;
+};
+
+// Format the size comparison display
+const formatSizeComparison = (img: UserImage) => {
+  const difference = calculateSizeDifference(img.sizeInBytes, img.convertedSizeInBytes);
+  const isSmaller = difference < 0;
+  const absPercentage = Math.abs(difference).toFixed(1);
+  
+  return {
+    color: isSmaller ? 'green' : 'red',
+    text: `${isSmaller ? '↓' : '↑'} ${absPercentage}%`,
+    isSmaller
+  };
+};
+
   return (
     <Container size="md" py="xl">
       <Stack gap="lg">
@@ -317,41 +336,60 @@ const MainPage: React.FC = () => {
                     />
                   </Table.Th>
                   <Table.Th>File Name</Table.Th>
-                  <Table.Th>Original Size</Table.Th>
+                  <Table.Th>Original Size (WebP)</Table.Th>
+                  <Table.Th>PNG Size</Table.Th>
+                  <Table.Th>Change</Table.Th>
                   <Table.Th>Date</Table.Th>
                   <Table.Th>Actions</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {history.map((img) => (
-                  <Table.Tr key={img.id}>
-                    <Table.Td>
-                      <Checkbox
-                        checked={selectedImageIds.includes(img.id)}
-                        onChange={() => toggleImageSelection(img.id)}
-                      />
-                    </Table.Td>
-                    <Table.Td>{img.originalFileName}</Table.Td>
-                    <Table.Td>{formatBytes(img.sizeInBytes)}</Table.Td>
-                    <Table.Td>{new Date(img.createdAt).toLocaleDateString()}</Table.Td>
-                    <Table.Td>
-                      <Group gap="xs">
-                        <ActionIcon color="blue" onClick={() => handleDownload(img)}>
-                          <IconDownload size={18} />
-                        </ActionIcon>
-                        <ActionIcon 
-                          color="red" 
-                          onClick={() => {
-                            setSelectedImageIds([img.id]);
-                            setDeleteModalOpen(true);
-                          }}
+                {history.map((img) => {
+                  const sizeComparison = formatSizeComparison(img);
+                  return (
+                    <Table.Tr key={img.id}>
+                      <Table.Td>
+                        <Checkbox
+                          checked={selectedImageIds.includes(img.id)}
+                          onChange={() => toggleImageSelection(img.id)}
+                        />
+                      </Table.Td>
+                      <Table.Td>{img.originalFileName}</Table.Td>
+                      <Table.Td>
+                        <Text size="sm">{formatBytes(img.sizeInBytes)}</Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text size="sm">{formatBytes(img.convertedSizeInBytes)}</Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Badge 
+                          color={sizeComparison.color} 
+                          variant="light"
+                          size="sm"
                         >
-                          <IconTrash size={18} />
-                        </ActionIcon>
-                      </Group>
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
+                          {sizeComparison.text}
+                        </Badge>
+                      </Table.Td>
+                      <Table.Td>{new Date(img.createdAt).toLocaleDateString()}</Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          <ActionIcon color="blue" onClick={() => handleDownload(img)}>
+                            <IconDownload size={18} />
+                          </ActionIcon>
+                          <ActionIcon 
+                            color="red" 
+                            onClick={() => {
+                              setSelectedImageIds([img.id]);
+                              setDeleteModalOpen(true);
+                            }}
+                          >
+                            <IconTrash size={18} />
+                          </ActionIcon>
+                        </Group>
+                      </Table.Td>
+                    </Table.Tr>
+                  );
+                })}
               </Table.Tbody>
             </Table>
           </Paper>

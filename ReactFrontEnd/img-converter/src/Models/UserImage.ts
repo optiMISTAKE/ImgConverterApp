@@ -3,5 +3,6 @@ export interface UserImage {
     originalFileName: string;
     format: string;
     sizeInBytes: number;
+    convertedSizeInBytes: number;
     createdAt: string;
 }

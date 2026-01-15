@@ -16,6 +16,7 @@ namespace ImgConverterApp.Domain.Entities
         public string StoredPath { get; private set; }
         public ImageFormat Format { get; private set; }
         public long SizeInBytes { get; private set; }
+        public long ConvertedSizeInBytes { get; private set; }
         
         // date and time when the image was created
         public DateTime CreatedAt { get; private set; }
@@ -23,9 +24,10 @@ namespace ImgConverterApp.Domain.Entities
         public DateTime ExpiresAt => CreatedAt.AddDays(30);
 
         // constructor
-        public UserImage(string userId, string originalFileName, string storedFileName, string storedPath, long sizeInBytes, ImageFormat format, DateTime createdAt)
+        public UserImage(string userId, string originalFileName, string storedFileName,
+            string storedPath, long sizeInBytes, long convertedSizeInBytes, ImageFormat format, DateTime createdAt)
         {
-            // Optional: Add simple validation (Domain Guardrails)
+            // Simple validation (Domain Guardrails)
             if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("User is required");
             if (sizeInBytes <= 0) throw new ArgumentException("File cannot be empty");
 
@@ -34,6 +36,7 @@ namespace ImgConverterApp.Domain.Entities
             StoredFileName = storedFileName;
             StoredPath = storedPath;
             SizeInBytes = sizeInBytes;
+            ConvertedSizeInBytes = convertedSizeInBytes;
             Format = format;
             CreatedAt = createdAt;
         }

@@ -49,13 +49,18 @@ namespace ImgConverterApp.Infrastructure.Services
                 await image.SaveAsync(fullPath, new PngEncoder());
             }
 
+            // Get the actual size of the converted PNG file
+            var convertedFileInfo = new FileInfo(fullPath);
+            var convertedFileSize = convertedFileInfo.Length;
+
             // create UserImage entity
             var userImage = new UserImage(
                 userId: userId,
                 originalFileName: newName,
                 storedFileName: storedFileName,
                 storedPath: fullPath,
-                sizeInBytes: fileSize, // input size, TO-DO: consider actual saved size
+                sizeInBytes: fileSize, // input size
+                convertedSizeInBytes: convertedFileSize, // output size
                 format: ImageFormat.Png,
                 createdAt: DateTime.UtcNow
             );
@@ -151,6 +156,7 @@ namespace ImgConverterApp.Infrastructure.Services
                     OriginalFileName = x.OriginalFileName,
                     Format = x.Format.ToString(),
                     SizeInBytes = x.SizeInBytes,
+                    ConvertedSizeInBytes = x.ConvertedSizeInBytes,
                     CreatedAt = x.CreatedAt
                 })
                 .ToListAsync();
