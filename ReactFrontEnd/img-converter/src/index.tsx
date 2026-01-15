@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// 1. Remove Semantic UI CSS and add Mantine CSS
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
-import '@mantine/dropzone/styles.css'; // Required for your Image Converter
+import '@mantine/dropzone/styles.css';
 import './index.css';
 
 import reportWebVitals from './reportWebVitals';
