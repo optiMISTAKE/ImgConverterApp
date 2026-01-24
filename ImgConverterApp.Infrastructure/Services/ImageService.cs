@@ -92,8 +92,27 @@ namespace ImgConverterApp.Infrastructure.Services
 
                             foreach (var oldImg in oldestImages)
                             {
-                                if (File.Exists(oldImg.StoredPath))
-                                    File.Delete(oldImg.StoredPath);
+                                var currentPath = Path.Combine(_storagePath, oldImg.StoredFileName);
+
+                                try
+                                {
+                                    if (File.Exists(currentPath))
+                                    {
+                                        File.Delete(currentPath);
+                                    }
+                                    else
+                                    {
+                                        // Fallback: Try the DB path if the dynamic path fails
+                                        // (Useful if you have files scattered across different logic versions)
+                                        if (File.Exists(oldImg.StoredPath))
+                                            File.Delete(oldImg.StoredPath);
+                                    }
+                                }
+                                catch (Exception deleteEx)
+                                {
+                                    // Log specifically which file failed so you can find it
+                                    Console.WriteLine($"Failed to delete file {oldImg.StoredFileName}: {deleteEx.Message}");
+                                }
                             }
 
                             db.UserImages.RemoveRange(oldestImages); // Use RemoveRange for efficiency
