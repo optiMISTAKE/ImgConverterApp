@@ -82,7 +82,7 @@ namespace ImgConverterApp.Infrastructure.Services
                     {
                         var userImageCount = await db.UserImages.CountAsync(x => x.UserId == userId);
 
-                        if (userImageCount >= 10)
+                        if (userImageCount > 10)
                         {
                             var oldestImages = await db.UserImages
                                 .Where(x => x.UserId == userId)
@@ -178,6 +178,7 @@ namespace ImgConverterApp.Infrastructure.Services
                     ConvertedSizeInBytes = x.ConvertedSizeInBytes,
                     CreatedAt = x.CreatedAt
                 })
+                .Take(10)
                 .ToListAsync();
         }
 
